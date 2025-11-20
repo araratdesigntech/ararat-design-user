@@ -39,7 +39,8 @@ window.ARARAT_API_BASE_URL = 'http://localhost:8000/api/v1';
       return 'http://localhost:8000/api/v1';
     }
 
-    return `${window.location.origin.replace(/\/$/, '')}/api/v1`;
+    // Production API URL
+    return 'https://api.araratdesigns.org/api/v1';
   };
 
   const API_BASE_URL = detectApiBaseUrl();

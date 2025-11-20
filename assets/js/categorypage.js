@@ -13,7 +13,11 @@
     if (window.location.protocol === 'file:' || !window.location.origin) {
       return 'http://localhost:8000/api/v1';
     }
-    return `${window.location.origin.replace(/\/$/, '')}/api/v1`;
+    if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      return 'http://localhost:8000/api/v1';
+    }
+    // Production API URL
+    return 'https://api.araratdesigns.org/api/v1';
   };
 
   const API_BASE_URL = detectApiBase();
