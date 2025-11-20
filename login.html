@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Ararat Design" />
+    <meta name="keywords" content="Ararat Design" />
+    <meta name="author" content="Ararat Design" />
+    <link rel="icon" href="./images/logo.jpg" type="image/x-icon" />
+    <link rel="shortcut icon" href="./images/logo.jpg" type="image/x-icon" />
+    <title>Ararat Design | Login</title>
+
+    <!--Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/remixicon.css" />
+
+    <!-- Slick slider css -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/slick.css" />
+
+    <!-- Animate icon -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/animate.css" />
+
+    <!-- Themify icon -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/themify-icons.css" />
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/vendors/bootstrap.css" />
+
+    <!-- Theme css -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
+
+    <style>
+      .auth-card {
+        border-radius: 20px;
+        border: 1px solid rgba(5, 10, 30, 0.07);
+        padding: 32px;
+        height: 100%;
+        background: #fff;
+        box-shadow: 0 20px 50px rgba(5, 10, 30, 0.05);
+      }
+
+      .auth-card h3 {
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .auth-card .form-box + .form-box {
+        margin-top: 16px;
+      }
+
+      .auth-card label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6c757d;
+        margin-bottom: 6px;
+      }
+
+      .auth-card .form-control {
+        border-radius: 12px;
+        padding: 12px 16px;
+      }
+
+      .auth-card .btn {
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 600;
+      }
+
+      .bg-soft-blue {
+        background: linear-gradient(135deg, rgba(5, 10, 30, 0.04), rgba(3, 57, 108, 0.08));
+      }
+    </style>
+  </head>
+
+  <body class="theme-color-5" data-api-base="/api/v1">
+    <!-- header start -->
+    <header class="header-2">
+        <div class="mobile-fix-option"></div>
+      <div class="top-header top-header-dark">
+            <div class="container">
+          <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="header-contact">
+                            <ul>
+                                <li>Welcome to Our store Ararat Design</li>
+                  <li><i class="ri-phone-fill"></i>Call Us: 080-396-484-72</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-end">
+                        <ul class="header-dropdown">
+                <li class="mobile-wishlist">
+                  <a href="wishlist.html"><i class="ri-heart-fill"></i> wishlist</a>
+                            </li>
+                <li class="onhover-dropdown mobile-account">
+                  <i class="ri-user-fill"></i>
+                                My Account
+                                <ul class="onhover-show-div">
+                                    <li><a href="login.html">Login</a></li>
+                                    <li><a href="register.html">register</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+            <div class="main-menu border-section border-top-0">
+                        <div class="menu-left">
+                            <div class="navbar">
+                  <a href="javascript:void(0)" onclick="openNav()"><i class="ri-bar-chart-horizontal-line sidebar-bar"></i></a>
+                                    </div>
+                                            </div>
+              <div class="brand-logo layout2-logo">
+                                <a href="index.html">
+                  <img src="./images/logo.jpg" class="img-fluid blur-up lazyload" alt="Ararat Logo" />
+                                </a>
+                        </div>
+                        <div class="menu-right pull-right">
+                <div class="icon-nav d-none d-sm-block">
+                  <ul>
+                    <li class="onhover-div mobile-search">
+                      <div><i class="ri-search-line"></i></div>
+                                                                            </li>
+                    <li class="onhover-div mobile-setting">
+                      <div><i class="ri-settings-2-line"></i></div>
+                                                                            </li>
+                    <li class="onhover-div mobile-cart">
+                      <div><i class="ri-shopping-cart-line"></i></div>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                                    </div>
+                                                                    </div>
+                                                                </div>
+                                                    <div class="container">
+                                                        <div class="row">
+          <div class="col-lg-12">
+            <div class="main-nav-center">
+              <nav>
+                <div class="toggle-nav">
+                  <i class="ri-bar-chart-horizontal-line sidebar-bar"></i>
+                                                            </div>
+                <ul class="sm pixelstrap sm-horizontal">
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="category-page.html">Shop</a></li>
+                  <li><a href="about-page.html">About</a></li>
+                  <li><a href="contact.html">Contact</a></li>
+                                                <li><a href="faq.html">FAQ</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                                            </div>
+            </div>
+        </div>
+    </header>
+    <!-- header end -->
+
+    <!-- breadcrumb start -->
+    <div class="breadcrumb-section">
+        <div class="container">
+        <h2>Customer login</h2>
+            <nav class="theme-breadcrumb">
+                <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Login</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- breadcrumb End -->
+
+    <!-- login section -->
+    <section class="section-b-space">
+        <div class="container">
+        <div class="row g-4 align-items-stretch">
+                <div class="col-lg-6">
+            <div class="auth-card h-100">
+              <h3>Welcome back</h3>
+              <p class="text-muted mb-4">Log in to resume your carts, wishlists and offline order tracking.</p>
+              <form class="theme-form" id="customer-login-form" novalidate>
+                            <div class="form-box">
+                  <label for="loginEmail" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="loginEmail" name="email" placeholder="you@example.com" required />
+                            </div>
+                            <div class="form-box">
+                  <label for="loginPassword" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter password" minlength="6" required />
+                            </div>
+                <button type="submit" class="btn btn-solid w-100 mt-4">Login</button>
+                        </form>
+                    </div>
+                </div>
+          <div class="col-lg-6">
+            <div class="auth-card bg-soft-blue h-100">
+              <h3>New to Ararat?</h3>
+              <p class="text-muted">
+                Create an account to save inspiration, request invoices, and coordinate payments with our WhatsApp concierge.
+              </p>
+              <ul class="list-unstyled mt-3 mb-4">
+                <li class="d-flex align-items-center mb-2"><i class="ri-check-fill text-success me-2"></i>Track carts, orders and invoices</li>
+                <li class="d-flex align-items-center mb-2"><i class="ri-check-fill text-success me-2"></i>Sync wishlist items across devices</li>
+                <li class="d-flex align-items-center"><i class="ri-check-fill text-success me-2"></i>Receive instant WhatsApp links for offline payments</li>
+              </ul>
+              <a href="register.html" class="btn btn-outline-primary w-100">Create an account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- login section end -->
+
+    <!-- Footer Section Start -->
+    <footer class="footer-light">
+      <div class="light-layout">
+            <div class="container">
+          <section class="small-section border-section border-top-0">
+            <div class="row align-items-center">
+              <div class="col-lg-6">
+                <div class="subscribe">
+                        <div>
+                    <h4>Visit our showroom</h4>
+                    <p class="text-muted mb-0">Plot 4, Lekki Palm City Estate, Lagos Nigeria.</p>
+                        </div>
+                    </div>
+                            </div>
+              <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-solid" href="https://wa.me/2348100474601" target="_blank" rel="noopener">Chat on WhatsApp</a>
+                            </div>
+                        </div>
+          </section>
+                    </div>
+      </div>
+      <section class="section-b-space light-layout">
+        <div class="container">
+          <div class="row footer-theme g-4">
+            <div class="col-lg-4 col-md-6">
+              <div class="footer-title footer-mobile-title">
+                <h4>About</h4>
+                            </div>
+                            <div class="footer-content">
+                <a href="index.html" class="footer-logo d-block mb-3">
+                  <img src="./images/logo.jpg" alt="Ararat" class="img-fluid" />
+                </a>
+                <p>
+                  Discover carefully crafted furniture, bespoke cabinetry and immersive styling support for modern African homes.
+                </p>
+                <ul class="contact-list">
+                  <li><i class="ri-map-pin-line"></i> Lekki, Lagos Nigeria</li>
+                  <li><i class="ri-phone-line"></i> Call Us: 080-396-484-72</li>
+                  <li><i class="ri-mail-line"></i> Email: araratdesignltd@gmail.com</li>
+                                </ul>
+                            </div>
+                        </div>
+            <div class="col">
+                        <div class="sub-title">
+                            <div class="footer-title">
+                  <h4>Explore</h4>
+                            </div>
+                            <div class="footer-content">
+                                <ul>
+                    <li><a href="index.html" class="text-content">Home</a></li>
+                    <li><a href="category-page.html" class="text-content">Shop</a></li>
+                    <li><a href="about-page.html" class="text-content">About Us</a></li>
+                    <li><a href="contact.html" class="text-content">Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+            <div class="col">
+                        <div class="sub-title">
+                            <div class="footer-title">
+                  <h4>Help</h4>
+                            </div>
+                            <div class="footer-content">
+                  <ul>
+                    <li><a href="faq.html" class="text-content">FAQ</a></li>
+                    <li><a href="wishlist.html" class="text-content">Wishlist</a></li>
+                    <li><a href="cart.html" class="text-content">Cart</a></li>
+                    <li><a href="order-tracking.html" class="text-content">Order tracking</a></li>
+                                    </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+      <div class="sub-footer">
+            <div class="container">
+                <div class="row">
+            <div class="col text-center">
+              <p class="mb-0">&copy; <span id="currentYear"></span> Ararat Design. Crafted in Lagos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Section End -->
+
+    <!-- latest jquery-->
+    <script src="./assets/js/jquery-3.3.1.min.js"></script>
+
+    <!-- menu js-->
+    <script src="./assets/js/menu.js"></script>
+
+    <!-- lazyload js-->
+    <script src="./assets/js/lazysizes.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="./assets/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Notification js-->
+    <script src="./assets/js/bootstrap-notify.min.js"></script>
+
+    <!-- Theme js-->
+    <script src="./assets/js/theme-setting.js"></script>
+    <script src="./assets/js/script.js"></script>
+    <script src="./assets/js/storefront.js"></script>
+    <script>
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
+

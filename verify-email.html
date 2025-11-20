@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Ararat Design - Verify Email" />
+    <meta name="keywords" content="Ararat Design" />
+    <meta name="author" content="Ararat Design" />
+    <link rel="icon" href="./images/logo.jpg" type="image/x-icon" />
+    <link
+      rel="shortcut icon"
+      href="./images/logo.jpg"
+      type="image/x-icon"
+    />
+    <title>Verify Email - Ararat Design</title>
+
+    <!--Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/font-awesome.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/remixicon.css"
+    />
+
+    <!-- Slick slider css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/slick.css"
+    />
+
+    <!-- Animate icon -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/animate.css"
+    />
+
+    <!-- Themify icon -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/themify-icons.css"
+    />
+
+    <!-- Bootstrap css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./assets/css/vendors/bootstrap.css"
+    />
+
+    <!-- Theme css -->
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
+    <style>
+      .verify-email-section {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 0;
+      }
+      .verify-email-card {
+        max-width: 500px;
+        width: 100%;
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+      .verify-email-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+      }
+      .verify-email-icon.success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .verify-email-icon.error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .verify-email-icon.loading {
+        background: #e7f3ff;
+        color: #004085;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .verify-email-card h2 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #333;
+      }
+      .verify-email-card p {
+        font-size: 16px;
+        color: #6c757d;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .verify-email-card .btn {
+        padding: 12px 32px;
+        font-size: 16px;
+        font-weight: 500;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body class="theme-color-5" data-api-base="/api/v1">
+    <!-- header start -->
+    <header class="header-2">
+      <div class="mobile-fix-option"></div>
+      <div class="top-header top-header-dark">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="header-contact">
+                <ul>
+                  <li>Welcome to Our store Ararat Design</li>
+                  <li><i class="ri-phone-fill"></i>Call Us: 08039648472</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-6 text-end">
+              <ul class="header-dropdown">
+                <li class="mobile-wishlist">
+                  <a href="#!"><i class="ri-heart-fill"></i> wishlist</a>
+                </li>
+                <li class="onhover-dropdown mobile-account">
+                  <i class="ri-user-fill"></i>
+                  My Account
+                  <ul class="onhover-show-div">
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">register</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="main-menu border-section border-top-0">
+              <div class="menu-left">
+                <div class="navbar">
+                  <a href="javascript:void(0)" onclick="openNav()"
+                    ><i class="ri-bar-chart-horizontal-line sidebar-bar"></i
+                  ></a>
+                  <div id="mySidenav" class="sidenav">
+                    <a
+                      href="javascript:void(0)"
+                      class="sidebar-overlay"
+                      onclick="closeNav()"
+                    ></a>
+                    <nav>
+                      <a href="javascript:void(0)" onclick="closeNav()">
+                        <div class="sidebar-back text-start">
+                          <i class="fa fa-angle-left pe-2"></i> Back
+                        </div>
+                      </a>
+                      <ul id="sub-menu" class="sm pixelstrap sm-vertical">
+                        <li>
+                          <a href="./category-page.html">Shop</a>
+                        </li>
+                        <li>
+                          <a href="./about-page.html">About Us</a>
+                        </li>
+                        <li>
+                          <a href="./contact.html">Contact Us</a>
+                        </li>
+                        <li>
+                          <a href="./faq.html">FAQ</a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+              <div class="brand-logo">
+                <a href="index.html"
+                  ><img
+                    src="./images/logo.jpg"
+                    class="img-fluid blur-up lazyload"
+                    alt="Ararat Design"
+                /></a>
+              </div>
+              <div class="menu-right pull-right">
+                <div class="icon-nav">
+                  <ul>
+                    <li class="onhover-div mobile-search">
+                      <div data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="ri-search-line"></i>
+                      </div>
+                    </li>
+                    <li class="onhover-div mobile-setting">
+                      <div><i class="ri-settings-2-line"></i></div>
+                      <div class="show-div setting">
+                        <h6>language</h6>
+                        <ul>
+                          <li><a href="#!">english</a></li>
+                          <li><a href="#!">ENGLISH</a></li>
+                        </ul>
+                        <h6>currency</h6>
+                        <ul class="list-inline">
+                          <li><a href="#!">euro</a></li>
+                          <li><a href="#!">Naira</a></li>
+                          <li><a href="#!">dollar</a></li>
+                        </ul>
+                      </div>
+                    </li>
+                    <li class="onhover-div mobile-cart">
+                      <div
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#cartOffcanvas"
+                      >
+                        <i class="ri-shopping-cart-line"></i>
+                      </div>
+                      <span class="cart_qty_cls">0</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="main-nav-center">
+              <nav id="main-nav">
+                <div class="toggle-nav">
+                  <i class="ri-bar-chart-horizontal-line sidebar-bar"></i>
+                </div>
+                <ul id="main-menu" class="sm pixelstrap sm-horizontal">
+                  <li class="mobile-box">
+                    <div class="mobile-back text-end">
+                      Menu<i class="ri-close-line"></i>
+                    </div>
+                  </li>
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="./category-page.html">Shop</a></li>
+                  <li><a href="./about-page.html">About Us</a></li>
+                  <li><a href="./contact.html">Contact Us</a></li>
+                  <li><a href="./faq.html">FAQ</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- header end -->
+
+    <!-- Verify Email Section -->
+    <section class="section-b-space verify-email-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="verify-email-card" id="verifyEmailCard">
+              <div class="verify-email-icon loading" id="verifyIcon">
+                <i class="ri-loader-4-line"></i>
+              </div>
+              <h2 id="verifyTitle">Verifying your email...</h2>
+              <p id="verifyMessage">Please wait while we verify your email address.</p>
+              <div id="verifyActions" class="d-none">
+                <a href="login.html" class="btn btn-solid">Go to Login</a>
+                <a href="index.html" class="btn btn-outline ms-2">Back to Home</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="footer-light">
+      <div class="light-layout">
+        <div class="container">
+          <section class="small-section border-section border-top-0">
+            <div class="row">
+              <div class="col-lg-6"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <section class="section-b-space light-layout">
+        <div class="container">
+          <div class="row footer-theme partition-f">
+            <div class="col-lg-4 col-md-6">
+              <div class="footer-title footer-mobile-title">
+                <h4>about</h4>
+              </div>
+              <div class="footer-content">
+                <a href="index.html" class="footer-logo d-block">
+                  <img src="./images/logo.jpg" alt="Ararat Design" />
+                </a>
+                <p>
+                  Discover the latest fashion trends, explore unique styles, and
+                  enjoy seamless shopping with our carefully curated exclusive
+                  collections, designed to elevate your wardrobe.
+                </p>
+                <div class="footer-social">
+                  <ul>
+                    <li>
+                      <a href="https://www.facebook.com/">
+                        <i class="ri-facebook-fill"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.google.com/">
+                        <i class="ri-google-fill"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.twitter.com/">
+                        <i class="ri-twitter-x-fill"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.instagram.com/">
+                        <i class="ri-instagram-fill"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.tiktok.com/">
+                        <i class="ri-tiktok-fill"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="sub-title">
+                <div class="footer-title">
+                  <h4>why we choose</h4>
+                </div>
+                <div class="footer-content">
+                  <ul>
+                    <li><a href="#!">shipping & return</a></li>
+                    <li><a href="./category-page.html">Shop</a></li>
+                    <li><a href="./about-page.html">About Us</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="./faq.html">FAQ</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="sub-title">
+                <div class="footer-title">
+                  <h4>store information</h4>
+                </div>
+                <div class="footer-content">
+                  <ul class="contact-list">
+                    <li>
+                      <i class="ri-map-pin-2-fill"></i>Ararat Design Store,
+                      345-659
+                    </li>
+                    <li>
+                      <i class="ri-phone-fill"></i>Call Us: 080-396-484-72
+                    </li>
+                    <li>
+                      <i class="ri-mail-fill"></i>Email Us:
+                      <a href="#!">araratdesignltd@gmail.com</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="sub-footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-6 col-md-6 col-sm-12">
+              <div class="footer-end"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- footer end -->
+
+    <!-- latest jquery-->
+    <script src="./assets/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="./assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="./assets/js/feather/feather.min.js"></script>
+
+    <!-- Slick js-->
+    <script src="./assets/js/slick/slick.min.js"></script>
+    <script src="./assets/js/slick/slick.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="./assets/js/lazysizes.min.js"></script>
+
+    <!-- script js -->
+    <script src="./assets/js/script.js"></script>
+
+    <!-- Storefront JS -->
+    <script src="./assets/js/storefront.js"></script>
+
+    <script>
+      (function () {
+        const detectApiBaseUrl = () => {
+          const sanitize = (value) => value?.replace(/\/$/, '');
+          if (window.ARARAT_API_BASE_URL) {
+            return sanitize(window.ARARAT_API_BASE_URL);
+          }
+          const metaContent = document.querySelector('meta[name="ararat-api-base"]')?.content;
+          if (metaContent) {
+            return sanitize(metaContent);
+          }
+          const bodyAttr = document.body?.dataset?.apiBase;
+          if (bodyAttr) {
+            if (/^https?:\/\//i.test(bodyAttr)) {
+              return sanitize(bodyAttr);
+            }
+            if (window.location.protocol !== 'file:') {
+              const origin = window.location.origin.replace(/\/$/, '');
+              const normalizedPath = bodyAttr.startsWith('/') ? bodyAttr : `/${bodyAttr}`;
+              return `${origin}${normalizedPath}`;
+            }
+          }
+          if (window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+            return 'http://localhost:8000/api/v1';
+          }
+          return `${window.location.origin.replace(/\/$/, '')}/api/v1`;
+        };
+
+        const API_BASE_URL = detectApiBaseUrl();
+
+        const verifyEmail = async () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const userId = urlParams.get('id');
+          const token = urlParams.get('token');
+
+          const verifyIcon = document.getElementById('verifyIcon');
+          const verifyTitle = document.getElementById('verifyTitle');
+          const verifyMessage = document.getElementById('verifyMessage');
+          const verifyActions = document.getElementById('verifyActions');
+
+          if (!userId || !token) {
+            verifyIcon.className = 'verify-email-icon error';
+            verifyIcon.innerHTML = '<i class="ri-error-warning-line"></i>';
+            verifyTitle.textContent = 'Invalid Verification Link';
+            verifyMessage.textContent = 'The verification link is missing required parameters. Please check your email and try again.';
+            verifyActions.classList.remove('d-none');
+            return;
+          }
+
+          try {
+            const response = await fetch(`${API_BASE_URL}/auth/verify-email/${userId}/${token}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+              verifyIcon.className = 'verify-email-icon success';
+              verifyIcon.innerHTML = '<i class="ri-checkbox-circle-line"></i>';
+              verifyTitle.textContent = 'Email Verified Successfully!';
+              verifyMessage.textContent = data.message || 'Your email has been verified. You can now log in to your account.';
+              verifyActions.classList.remove('d-none');
+              
+              // Auto-redirect to login after 3 seconds
+              setTimeout(() => {
+                window.location.href = 'login.html';
+              }, 3000);
+            } else {
+              throw new Error(data.message || 'Verification failed');
+            }
+          } catch (error) {
+            verifyIcon.className = 'verify-email-icon error';
+            verifyIcon.innerHTML = '<i class="ri-error-warning-line"></i>';
+            verifyTitle.textContent = 'Verification Failed';
+            verifyMessage.textContent = error.message || 'Unable to verify your email. The link may have expired or is invalid. Please request a new verification email.';
+            verifyActions.classList.remove('d-none');
+          }
+        };
+
+        // Run verification on page load
+        document.addEventListener('DOMContentLoaded', verifyEmail);
+      })();
+    </script>
+  </body>
+</html>
+
