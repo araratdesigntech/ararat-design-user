@@ -1,10 +1,14 @@
-window.ARARAT_API_BASE_URL = 'http://localhost:8000/api/v1';
-
+// Only set ARARAT_API_BASE_URL if not already set (allows override from HTML)
+if (!window.ARARAT_API_BASE_URL) {
+  // Don't set a default - let the detection function handle it
+  // This allows the detection logic to work properly in production
+}
 
 (function () {
   const detectApiBaseUrl = () => {
     const sanitize = (value) => value?.replace(/\/$/, '');
     const fromInlineConfig = () => {
+      // Check for explicit configuration (set in HTML or by user)
       if (window.ARARAT_API_BASE_URL) {
         return sanitize(window.ARARAT_API_BASE_URL);
       }
@@ -44,6 +48,11 @@ window.ARARAT_API_BASE_URL = 'http://localhost:8000/api/v1';
   };
 
   const API_BASE_URL = detectApiBaseUrl();
+  
+  // Debug: Log the detected API URL (remove in production if desired)
+  console.log('[Storefront] Detected API Base URL:', API_BASE_URL);
+  console.log('[Storefront] Current hostname:', window.location.hostname);
+  
   const SESSION_KEY = 'ararat_session';
 
   const showAlert = (message, type = 'info') => {
