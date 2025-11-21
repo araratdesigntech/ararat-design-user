@@ -413,8 +413,9 @@
     </footer>
     <!-- footer end -->
 
-    <!-- latest jquery-->
-    <script src="./assets/js/jquery-3.6.0.min.js"></script>
+  <!-- latest jquery-->
+  <script src="./assets/js/ararat-config.js"></script>
+  <script src="./assets/js/jquery-3.6.0.min.js"></script>
 
     <!-- Bootstrap js-->
     <script src="./assets/js/bootstrap/bootstrap.bundle.min.js"></script>
@@ -458,10 +459,10 @@
             }
           }
           if (window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-            return 'http://localhost:8000/api/v1';
+            return sanitize(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
           }
-          // Production API URL
-          return 'https://api.araratdesigns.org/api/v1';
+          // Production - prefer centralized config
+          return sanitize(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
         };
 
         const API_BASE_URL = detectApiBaseUrl();

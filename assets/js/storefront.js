@@ -35,16 +35,23 @@ if (!window.ARARAT_API_BASE_URL) {
       return inlineConfig;
     }
 
+    // If a centralized runtime config was injected earlier, prefer it
+    if (window.Storefront && window.Storefront.config && window.Storefront.config.API_BASE_URL) {
+      return sanitize(window.Storefront.config.API_BASE_URL);
+    }
+
+    // Fall back to legacy detection only when no centralized value is present
     if (window.location.protocol === 'file:' || window.location.hostname === '') {
-      return 'http://localhost:8000/api/v1';
+      // Fall back to the centralized runtime config when available
+      return sanitize(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
     }
 
     if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-      return 'http://localhost:8000/api/v1';
+      return sanitize(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
     }
 
-    // Production API URL
-    return 'https://api.araratdesigns.org/api/v1';
+    // Production - prefer centralized config
+    return sanitize(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
   };
 
   const API_BASE_URL = detectApiBaseUrl();

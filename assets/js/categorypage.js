@@ -1,5 +1,9 @@
 (() => {
   const detectApiBase = () => {
+    // Prefer centrally configured runtime value if available
+    if (window.ARARAT_API_BASE_URL) {
+      return String(window.ARARAT_API_BASE_URL).replace(/\/$/, '');
+    }
     if (window.Storefront?.config?.API_BASE_URL) {
       return window.Storefront.config.API_BASE_URL.replace(/\/$/, '');
     }
@@ -11,13 +15,13 @@
       return `${window.location.origin.replace(/\/$/, '')}/${bodyAttr.replace(/^\//, '')}`;
     }
     if (window.location.protocol === 'file:' || !window.location.origin) {
-      return 'http://localhost:8000/api/v1';
+      return String(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
     }
     if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-      return 'http://localhost:8000/api/v1';
+      return String(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
     }
-    // Production API URL
-    return 'https://api.araratdesigns.org/api/v1';
+    // Production API URL (prefer central config)
+    return String(window.ARARAT_API_BASE_URL || window.Storefront?.config?.API_BASE_URL || '');
   };
 
   const API_BASE_URL = detectApiBase();
