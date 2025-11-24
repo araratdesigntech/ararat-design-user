@@ -287,8 +287,22 @@
   const loadCategories = async () => {
     if (!els.categoryList) return;
     try {
-      const response = await request('/categories?limit=50');
+      // Wait for Storefront API to be available, fallback to direct request
+      let response;
+      if (window.Storefront && window.Storefront.config && window.Storefront.config.apiRequest) {
+        response = await window.Storefront.config.apiRequest('/categories?limit=50', { skipAuth: true });
+      } else {
+        // Fallback to direct request if Storefront not available yet
+        response = await request('/categories?limit=50');
+      }
+      
       const categories = response?.data?.categories || [];
+      
+      if (categories.length === 0) {
+        els.categoryList.innerHTML = '<p class="text-muted small mb-0">No categories available.</p>';
+        return;
+      }
+      
       let markup = `<div class="form-check mb-2">
         <input class="form-check-input" type="radio" name="category-filter" id="category-all" value="" checked>
         <label class="form-check-label" for="category-all">All categories</label>
@@ -306,7 +320,7 @@
       els.categoryList.innerHTML = markup;
     } catch (error) {
       console.error('Error loading categories', error);
-      els.categoryList.innerHTML = '<p class="text-danger small mb-0">Unable to load categories.</p>';
+      els.categoryList.innerHTML = '<p class="text-danger small mb-0">Unable to load categories. Please try again later.</p>';
     }
   };
 
@@ -454,11 +468,25 @@
     });
   };
 
-  const init = () => {
+  const init = async () => {
     if (!els.grid) return;
+    
+    // Wait for Storefront to be available (it should load before this script)
+    let retries = 0;
+    while (!window.Storefront && retries < 20) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      retries++;
+    }
+    
     bindEvents();
-    loadCategories().finally(() => loadProducts());
+    await loadCategories();
+    loadProducts();
   };
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    // DOM already loaded
+    init();
+  }
 })();

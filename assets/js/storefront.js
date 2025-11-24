@@ -17,15 +17,11 @@ if (!window.ARARAT_API_BASE_URL) {
         return sanitize(metaContent);
       }
       const bodyAttr = document.body?.dataset?.apiBase;
-      if (bodyAttr) {
-        if (/^https?:\/\//i.test(bodyAttr)) {
-          return sanitize(bodyAttr);
-        }
-        if (window.location.protocol !== 'file:') {
-          const origin = window.location.origin.replace(/\/$/, '');
-          const normalizedPath = bodyAttr.startsWith('/') ? bodyAttr : `/${bodyAttr}`;
-          return `${origin}${normalizedPath}`;
-        }
+      // Only accept absolute URLs from body dataset to avoid accidentally
+      // combining the frontend origin with an API path (which can point to
+      // localhost when the frontend is served from a local dev host).
+      if (bodyAttr && /^https?:\/\//i.test(bodyAttr)) {
+        return sanitize(bodyAttr);
       }
       return null;
     };
