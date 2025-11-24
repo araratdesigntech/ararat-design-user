@@ -135,7 +135,13 @@
           <a class="product-title text-capitalize" href="product-page(thumbnail).html?id=${product._id}">${product?.name || 'Product'}</a>
           <p class="text-muted small mb-1">${product?.stock || 'Made to order'}</p>
           <div class="d-flex justify-content-between align-items-center">
-            <h4 class="price mb-0">${formatCurrency(product?.price || 0)}</h4>
+            <div class="d-flex align-items-center flex-wrap gap-2">
+              <h4 class="price mb-0">${formatCurrency(product?.price || 0)}</h4>
+              <span class="price-badge" title="Prices are negotiable and can be customized to suit your budget">
+                <i class="ri-price-tag-3-line"></i>
+                Negotiable
+              </span>
+            </div>
             ${rating > 0 ? `<span class="badge bg-light text-dark">
               <i class="ri-star-fill text-warning me-1"></i>${Number(rating).toFixed(1)}
             </span>` : ''}

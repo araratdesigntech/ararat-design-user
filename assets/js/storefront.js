@@ -366,7 +366,13 @@ if (!window.ARARAT_API_BASE_URL) {
                 </a>
                 <p class="text-muted small mb-1">${product?.stock || 'Made to order'}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                  <h4 class="price mb-0">${formatCurrency(product.price)}</h4>
+                  <div class="d-flex align-items-center flex-wrap gap-2">
+                    <h4 class="price mb-0">${formatCurrency(product.price)}</h4>
+                    <span class="price-badge" title="Prices are negotiable and can be customized to suit your budget">
+                      <i class="ri-price-tag-3-line"></i>
+                      Negotiable
+                    </span>
+                  </div>
                   ${rating > 0 ? `<span class="badge bg-light text-dark">
                     <i class="ri-star-fill text-warning me-1"></i>${Number(rating).toFixed(1)}
                   </span>` : ''}
@@ -818,13 +824,49 @@ if (!window.ARARAT_API_BASE_URL) {
       const response = await apiRequest('/settings/public', { skipAuth: true });
       const phone = response?.data?.adminWhatsappNumber;
       if (!phone) return;
+      
+      // Update header contact phone number
       document.querySelectorAll('.header-contact li').forEach((item) => {
         if (item.textContent.includes('Call Us')) {
           item.innerHTML = `<i class="ri-phone-fill"></i>Call Us: ${phone}`;
         }
       });
+      
+      // Update WhatsApp links with new number
+      // Format: remove any non-digit characters and ensure it starts with country code
+      let whatsappNumber = phone.replace(/[^0-9]/g, '');
+      // If number starts with 0, replace with 234 (Nigeria country code)
+      if (whatsappNumber.startsWith('0')) {
+        whatsappNumber = '234' + whatsappNumber.substring(1);
+      } else if (!whatsappNumber.startsWith('234')) {
+        whatsappNumber = '234' + whatsappNumber;
+      }
+      
+      // Update all WhatsApp links
+      document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
+        const href = link.getAttribute('href');
+        if (href && href.includes('wa.me/')) {
+          try {
+            // Extract the message parameter if it exists
+            let message = '';
+            if (href.includes('?')) {
+              const urlParams = new URLSearchParams(href.split('?')[1]);
+              message = urlParams.get('text') || '';
+            }
+            // Update the href with new WhatsApp number
+            link.href = `https://wa.me/${whatsappNumber}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
+          } catch (error) {
+            // Fallback: simple replacement if URL parsing fails
+            const match = href.match(/wa\.me\/\d+/);
+            if (match) {
+              link.href = href.replace(match[0], `wa.me/${whatsappNumber}`);
+            }
+          }
+        }
+      });
     } catch (error) {
       // ignore sync errors
+      console.warn('Failed to sync admin contact:', error);
     }
   };
 
