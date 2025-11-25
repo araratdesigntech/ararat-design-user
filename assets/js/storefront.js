@@ -565,9 +565,23 @@ if (!window.ARARAT_API_BASE_URL) {
             showAlert(error?.message || 'Unable to remove item.', 'danger');
           }
         } else {
-          // For decreasing quantity, we need to remove and re-add with new quantity
-          // This is a workaround until an update endpoint is available
-          showAlert('Quantity update feature coming soon. Please remove and add again to change quantity.', 'info');
+          // Decrease quantity using the decrease parameter
+          try {
+            await apiRequest('/cart?decrease=true', {
+              method: 'POST',
+              body: { productId },
+            });
+            showAlert('Quantity decreased.', 'success');
+            await initCartPage();
+            updateCartCountBadge();
+            // Refresh cart offcanvas if it's open
+            const offcanvas = document.getElementById('cartOffcanvas');
+            if (offcanvas && offcanvas.classList.contains('show')) {
+              await renderCartOffcanvas();
+            }
+          } catch (error) {
+            showAlert(error?.message || 'Unable to decrease quantity.', 'danger');
+          }
         }
       };
     });
@@ -1271,9 +1285,19 @@ if (!window.ARARAT_API_BASE_URL) {
             showAlert(error?.message || 'Unable to remove item.', 'danger');
           }
         } else {
-          // For now, since there's no update endpoint, we'll remove and re-add with new quantity
-          // This is not ideal but works with the current API
-          showAlert('Quantity update feature coming soon. Please use the cart page to update quantities.', 'info');
+          // Decrease quantity using the decrease parameter
+          try {
+            await apiRequest('/cart?decrease=true', {
+              method: 'POST',
+              body: { productId },
+            });
+            showAlert('Quantity decreased.', 'success');
+            await renderCartOffcanvas();
+            updateCartCountBadge();
+            initCartPage();
+          } catch (error) {
+            showAlert(error?.message || 'Unable to decrease quantity.', 'danger');
+          }
         }
       };
     });

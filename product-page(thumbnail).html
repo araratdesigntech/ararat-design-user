@@ -4827,29 +4827,44 @@
           const buyNowBtn = document.getElementById("buy-now-btn");
 
           if (addToCartBtn) {
-            addToCartBtn.setAttribute("data-add-to-cart", product._id);
             addToCartBtn.setAttribute("data-product-id", product._id);
             
+            // Remove data-add-to-cart attribute to prevent global handler from firing
+            // We'll handle it with a specific listener that supports quantity
+            addToCartBtn.removeAttribute("data-add-to-cart");
+            
+            // Remove any existing click listeners to prevent duplicates
+            const newBtn = addToCartBtn.cloneNode(true);
+            addToCartBtn.parentNode?.replaceChild(newBtn, addToCartBtn);
+            const freshAddToCartBtn = document.getElementById("add-to-cart-btn");
+            
             // Bind add to cart handler with quantity support
-            addToCartBtn.addEventListener("click", async (e) => {
-              e.preventDefault();
-              const qtyInput = document.querySelector('input[name="quantity"]');
-              const quantity = parseInt(qtyInput?.value || 1);
+            if (freshAddToCartBtn) {
+              // Ensure the cloned button doesn't have data-add-to-cart attribute
+              freshAddToCartBtn.removeAttribute("data-add-to-cart");
+              
+              freshAddToCartBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent global handler from firing
+                e.stopImmediatePropagation(); // Prevent other listeners on same element
+                const qtyInput = document.querySelector('input[name="quantity"]');
+                const quantity = parseInt(qtyInput?.value || 1);
 
-              if (window.Storefront && window.Storefront.handleAddToCart) {
-                try {
-                  await window.Storefront.handleAddToCart(product._id, quantity);
-                } catch (error) {
-                  // Error is already shown via toast in handleAddToCart
-                  console.error("Error adding to cart:", error);
+                if (window.Storefront && window.Storefront.handleAddToCart) {
+                  try {
+                    await window.Storefront.handleAddToCart(product._id, quantity);
+                  } catch (error) {
+                    // Error is already shown via toast in handleAddToCart
+                    console.error("Error adding to cart:", error);
+                  }
+                } else {
+                  // Fallback: show toast notification if Storefront not available
+                  if (window.Storefront && window.Storefront.showAlert) {
+                    window.Storefront.showAlert("Please wait for the page to load completely.", 'warning');
+                  }
                 }
-              } else {
-                // Fallback: show toast notification if Storefront not available
-                if (window.Storefront && window.Storefront.showAlert) {
-                  window.Storefront.showAlert("Please wait for the page to load completely.", 'warning');
-                }
-              }
-            });
+              });
+            }
           }
 
           if (addToWishlistBtn) {
