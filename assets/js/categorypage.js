@@ -42,6 +42,9 @@
     empty: document.getElementById('categoryEmptyState'),
     error: document.getElementById('categoryErrorState'),
     summary: document.getElementById('categorySummary'),
+    heroTitle: document.getElementById('categoryHeroTitle'),
+    heroSubtitle: document.getElementById('categoryHeroSubtitle'),
+    breadcrumbCategoryLabel: document.getElementById('breadcrumbCategoryLabel'),
     pagination: document.getElementById('categoryPagination'),
     sortSelect: document.getElementById('sortSelect'),
     limitSelect: document.getElementById('limitSelect'),
@@ -55,6 +58,9 @@
     resetAllBtn: document.getElementById('resetAllFiltersBtn'),
     quickFilterChips: document.querySelectorAll('#quickFilterChips .filter-chip'),
     activeFilters: document.getElementById('activeFilters'),
+    openFiltersBtn: document.getElementById('openFiltersBtn'),
+    closeFiltersBtn: document.getElementById('closeFiltersBtn'),
+    filterOverlay: document.querySelector('.filter-overlay'),
   };
 
   const formatCurrency = (value = 0) => {
@@ -84,7 +90,15 @@
   };
 
   const request = async (path) => {
-    const response = await fetch(`${API_BASE_URL}${path}`);
+    if (!API_BASE_URL) {
+      throw new Error('API_BASE_URL is not configured');
+    }
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       throw data;
@@ -116,6 +130,13 @@
   const buildProductCard = (product) => {
     const imageUrl = product?.productImages?.[0]?.url || '../assets/images/fashion-1/product/17.jpg';
     const rating = product?.ratings || 0;
+    const productName = product?.name || 'this product';
+    const productId = product?._id || '';
+    const whatsappMessage = encodeURIComponent(
+      `Hello Ararat, I'm interested in "${productName}" (${productId}). Please share current options and availability.`
+    );
+    const whatsappLink = `https://wa.me/2340000000000?text=${whatsappMessage}`;
+
     return `<div class="col-xl-4 col-md-6 col-6">
       <div class="storefront-card">
         <div class="storefront-card__image">
@@ -135,13 +156,16 @@
           <a class="product-title text-capitalize" href="product-page(thumbnail).html?id=${product._id}">${product?.name || 'Product'}</a>
           <p class="text-muted small mb-1">${product?.stock || 'Made to order'}</p>
           <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center flex-wrap gap-2">
-              <h4 class="price mb-0">${formatCurrency(product?.price || 0)}</h4>
-              <span class="price-badge" title="Prices are negotiable and can be customized to suit your budget">
-                <i class="ri-price-tag-3-line"></i>
-                Negotiable
-              </span>
-            </div>
+            <a
+              href="${whatsappLink}"
+              target="_blank"
+              rel="noopener"
+              class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 storefront-card__whatsapp"
+              title="Chat on WhatsApp to negotiate this product"
+            >
+              <i class="ri-whatsapp-line"></i>
+              <span class="small">Chat to negotiate</span>
+            </a>
             ${rating > 0 ? `<span class="badge bg-light text-dark">
               <i class="ri-star-fill text-warning me-1"></i>${Number(rating).toFixed(1)}
             </span>` : ''}
@@ -157,11 +181,31 @@
     const currentCount = payload?.products?.length || 0;
     if (!currentCount) {
       els.summary.textContent = 'No products available for the selected filters.';
+      if (els.heroTitle) els.heroTitle.textContent = state.categoryLabel || 'No products available';
+      if (els.heroSubtitle) {
+        els.heroSubtitle.textContent =
+          'Try selecting another category or resetting your filters to view more pieces.';
+      }
       return;
     }
     const start = (state.page - 1) * state.limit + 1;
     const end = start + currentCount - 1;
     els.summary.textContent = `Showing ${start}–${end} of ${total} products`;
+
+    // Update hero and breadcrumb text
+    const categoryName = state.categoryLabel || 'All products';
+    if (els.heroTitle) {
+      els.heroTitle.textContent = categoryName;
+    }
+    if (els.heroSubtitle) {
+      els.heroSubtitle.textContent =
+        state.categoryLabel
+          ? 'You\'re viewing pieces from this category. Add favourites to your cart and negotiate details on WhatsApp.'
+          : 'Browse all available pieces. Use the filters on the left to narrow down by category or other preferences.';
+    }
+    if (els.breadcrumbCategoryLabel) {
+      els.breadcrumbCategoryLabel.textContent = categoryName;
+    }
   };
 
   const renderProducts = (payload) => {
@@ -177,6 +221,11 @@
     els.error.classList.add('d-none');
     els.grid.innerHTML = products.map(buildProductCard).join('');
     updateSummary(payload);
+    
+    // Update WhatsApp links in dynamically loaded products
+    if (window.Storefront && typeof window.Storefront.syncAdminContact === 'function') {
+      window.Storefront.syncAdminContact();
+    }
   };
 
   const renderPagination = (payload) => {
@@ -292,41 +341,71 @@
 
   const loadCategories = async () => {
     if (!els.categoryList) return;
+    
+    // Show loading state
+    els.categoryList.innerHTML = `
+      <div class="placeholder-wave">
+        <div class="placeholder col-10 mb-2"></div>
+        <div class="placeholder col-8 mb-2"></div>
+        <div class="placeholder col-6 mb-2"></div>
+      </div>
+    `;
+    
     try {
-      // Wait for Storefront API to be available, fallback to direct request
       let response;
-      if (window.Storefront && window.Storefront.config && window.Storefront.config.apiRequest) {
+      
+      // Try using Storefront API first (preferred method)
+      if (window.Storefront && typeof window.Storefront.apiRequest === 'function') {
+        response = await window.Storefront.apiRequest('/categories?limit=50', { skipAuth: true });
+      } else if (window.Storefront && window.Storefront.config && typeof window.Storefront.config.apiRequest === 'function') {
         response = await window.Storefront.config.apiRequest('/categories?limit=50', { skipAuth: true });
       } else {
-        // Fallback to direct request if Storefront not available yet
+        // Fallback to direct request
         response = await request('/categories?limit=50');
       }
       
-      const categories = response?.data?.categories || [];
+      // Handle different response structures
+      const categories = response?.data?.categories || response?.categories || [];
       
-      if (categories.length === 0) {
+      if (!Array.isArray(categories) || categories.length === 0) {
         els.categoryList.innerHTML = '<p class="text-muted small mb-0">No categories available.</p>';
         return;
       }
       
+      // Build category filter markup
       let markup = `<div class="form-check mb-2">
         <input class="form-check-input" type="radio" name="category-filter" id="category-all" value="" checked>
         <label class="form-check-label" for="category-all">All categories</label>
       </div>`;
+      
       markup += categories
         .map(
-          (category) => `<div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="category-filter" id="category-${category._id}" value="${
-            category._id
-          }" data-label="${category.name}">
-            <label class="form-check-label text-capitalize" for="category-${category._id}">${category.name}</label>
-          </div>`
+          (category) => {
+            const categoryId = category._id || category.id || '';
+            const categoryName = category.name || 'Unnamed Category';
+            return `<div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="category-filter" id="category-${categoryId}" value="${categoryId}" data-label="${categoryName}">
+              <label class="form-check-label text-capitalize" for="category-${categoryId}">${categoryName}</label>
+            </div>`;
+          }
         )
         .join('');
+      
       els.categoryList.innerHTML = markup;
+      
+      // Re-bind category change event listeners after DOM update
+      els.categoryList.querySelectorAll('input[name="category-filter"]').forEach(input => {
+        if (!input.hasAttribute('data-listener-bound')) {
+          input.setAttribute('data-listener-bound', 'true');
+        }
+      });
+      
     } catch (error) {
-      console.error('Error loading categories', error);
-      els.categoryList.innerHTML = '<p class="text-danger small mb-0">Unable to load categories. Please try again later.</p>';
+      console.error('Error loading categories:', error);
+      els.categoryList.innerHTML = `
+        <p class="text-danger small mb-2">Unable to load categories.</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">Retry</button>
+      `;
     }
   };
 
@@ -472,20 +551,166 @@
       const key = target.getAttribute('data-remove-filter');
       handleActiveFilterRemoval(key);
     });
+
+    // Mobile filter open/close
+    const openFilters = () => {
+      document.body.classList.add('filters-open');
+    };
+
+    const closeFilters = () => {
+      document.body.classList.remove('filters-open');
+    };
+
+    els.openFiltersBtn?.addEventListener('click', openFilters);
+    els.closeFiltersBtn?.addEventListener('click', closeFilters);
+    els.filterOverlay?.addEventListener('click', closeFilters);
+  };
+
+  /**
+   * Get category from URL parameter and set it in state
+   */
+  const getCategoryFromUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('category');
+    if (categoryId) {
+      state.category = categoryId;
+      // Update URL without reload
+      window.history.replaceState({}, '', window.location.pathname + window.location.search);
+    }
+  };
+
+  /**
+   * Set category filter after categories are loaded
+   */
+  const applyCategoryFromUrl = () => {
+    if (!state.category || !els.categoryList) return;
+    
+    // Find the category input and check it
+    const categoryInput = els.categoryList.querySelector(`input[value="${state.category}"]`);
+    if (categoryInput) {
+      categoryInput.checked = true;
+      // Get category label from the input's dataset or label
+      const labelElement = categoryInput.closest('.form-check')?.querySelector('label');
+      if (labelElement) {
+        state.categoryLabel = labelElement.textContent.trim();
+      }
+    }
+  };
+
+  /**
+   * Load categories into the side navigation menu
+   */
+  const loadSideMenuCategories = async () => {
+    const sideMenu = document.getElementById('sub-menu');
+    if (!sideMenu) return;
+
+    // Show loading state
+    sideMenu.innerHTML = `
+      <li class="category-loading">
+        <a href="#!" class="text-muted">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Loading categories...
+        </a>
+      </li>
+    `;
+
+    try {
+      let response;
+      
+      // Try using Storefront API first (preferred method)
+      if (window.Storefront && typeof window.Storefront.apiRequest === 'function') {
+        response = await window.Storefront.apiRequest('/categories?limit=50', { skipAuth: true });
+      } else if (window.Storefront && window.Storefront.config && typeof window.Storefront.config.apiRequest === 'function') {
+        response = await window.Storefront.config.apiRequest('/categories?limit=50', { skipAuth: true });
+      } else {
+        // Fallback to direct request
+        response = await request('/categories?limit=50');
+      }
+      
+      // Handle different response structures
+      const categories = response?.data?.categories || response?.categories || [];
+      
+      if (!Array.isArray(categories) || categories.length === 0) {
+        sideMenu.innerHTML = `
+          <li>
+            <a href="category-page.html" class="text-muted">All Categories</a>
+          </li>
+          <li>
+            <a href="#!" class="text-muted small">No categories available</a>
+          </li>
+        `;
+        return;
+      }
+      
+      // Build menu items
+      let markup = '';
+      
+      // Add "All Categories" option first
+      markup += `<li>
+        <a href="category-page.html">All Categories</a>
+      </li>`;
+      
+      // Add each category
+      markup += categories
+        .map(
+          (category) => {
+            const categoryId = category._id || category.id || '';
+            const categoryName = category.name || 'Unnamed Category';
+            return `<li>
+              <a href="category-page.html?category=${categoryId}">${categoryName}</a>
+            </li>`;
+          }
+        )
+        .join('');
+      
+      sideMenu.innerHTML = markup;
+      
+    } catch (error) {
+      console.error('Error loading side menu categories:', error);
+      sideMenu.innerHTML = `
+        <li>
+          <a href="category-page.html">All Categories</a>
+        </li>
+        <li>
+          <a href="#!" class="text-danger small">Unable to load categories</a>
+        </li>
+      `;
+    }
   };
 
   const init = async () => {
     if (!els.grid) return;
     
+    // Get category from URL first
+    getCategoryFromUrl();
+    
     // Wait for Storefront to be available (it should load before this script)
     let retries = 0;
-    while (!window.Storefront && retries < 20) {
+    const maxRetries = 30; // Increased retries for slower connections
+    while (!window.Storefront && retries < maxRetries) {
       await new Promise(resolve => setTimeout(resolve, 100));
       retries++;
     }
     
+    if (retries >= maxRetries) {
+      console.warn('[CategoryPage] Storefront not available after waiting, proceeding with direct API calls');
+    }
+    
     bindEvents();
-    await loadCategories();
+    
+    // Load categories first, then products
+    try {
+      await Promise.all([
+        loadCategories(),
+        loadSideMenuCategories() // Load side menu categories in parallel
+      ]);
+      // Apply category filter after categories are loaded
+      applyCategoryFromUrl();
+    } catch (error) {
+      console.error('[CategoryPage] Failed to load categories:', error);
+    }
+    
+    // Load products regardless of category loading status
     loadProducts();
   };
 

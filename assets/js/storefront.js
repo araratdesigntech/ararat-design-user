@@ -343,6 +343,13 @@ if (!window.ARARAT_API_BASE_URL) {
       products.forEach((product) => {
         const imageUrl = product?.productImages?.[0]?.url || '../assets/images/fashion-1/product/17.jpg';
         const rating = product?.ratings || 0;
+        const productName = product?.name || 'this product';
+        const productId = product?._id || '';
+        const whatsappMessage = encodeURIComponent(
+          `Hello Ararat, I'm interested in "${productName}" (${productId}). Please share current options and availability.`
+        );
+        const whatsappLink = `https://wa.me/2340000000000?text=${whatsappMessage}`;
+
         container.insertAdjacentHTML(
           'beforeend',
           `<div class="col">
@@ -366,13 +373,16 @@ if (!window.ARARAT_API_BASE_URL) {
                 </a>
                 <p class="text-muted small mb-1">${product?.stock || 'Made to order'}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center flex-wrap gap-2">
-                    <h4 class="price mb-0">${formatCurrency(product.price)}</h4>
-                    <span class="price-badge" title="Prices are negotiable and can be customized to suit your budget">
-                      <i class="ri-price-tag-3-line"></i>
-                      Negotiable
-                    </span>
-                  </div>
+                  <a
+                    href="${whatsappLink}"
+                    target="_blank"
+                    rel="noopener"
+                    class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 storefront-card__whatsapp"
+                    title="Chat on WhatsApp to negotiate this product"
+                  >
+                    <i class="ri-whatsapp-line"></i>
+                    <span class="small">Chat to negotiate</span>
+                  </a>
                   ${rating > 0 ? `<span class="badge bg-light text-dark">
                     <i class="ri-star-fill text-warning me-1"></i>${Number(rating).toFixed(1)}
                   </span>` : ''}
@@ -382,6 +392,9 @@ if (!window.ARARAT_API_BASE_URL) {
           </div>`
         );
       });
+      
+      // Update WhatsApp links in dynamically loaded products
+      syncAdminContact();
     } catch (error) {
       container.innerHTML = '';
       setState({ empty: false, error: true });
@@ -1526,6 +1539,7 @@ if (!window.ARARAT_API_BASE_URL) {
       window.location.href = 'login.html';
     },
     updateHeaderAuth,
+    syncAdminContact,
   };
 })();
 

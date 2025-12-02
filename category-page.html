@@ -225,6 +225,45 @@
         padding: 4px 8px;
       }
 
+      /* WhatsApp CTA on product cards */
+      .storefront-card__whatsapp {
+        background-color: #25d366;
+        border-color: #25d366;
+        color: #ffffff;
+        border-radius: 999px;
+        padding-inline: 16px;
+        padding-block: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+        white-space: nowrap;
+      }
+
+      .storefront-card__whatsapp i {
+        font-size: 18px;
+      }
+
+      .storefront-card__whatsapp:hover,
+      .storefront-card__whatsapp:focus {
+        background-color: #1ebe5a;
+        border-color: #1ebe5a;
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.45);
+      }
+
+      @media (max-width: 575.98px) {
+        .storefront-card .product-detail > .d-flex {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .storefront-card__whatsapp {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
       .legacy-collection {
         display: none !important;
       }
@@ -233,8 +272,8 @@
         border-radius: 24px;
         background: linear-gradient(
             120deg,
-            rgba(8, 46, 73, 0.9),
-            rgba(9, 84, 122, 0.85)
+            rgba(236, 137, 81, 0.75),
+            rgba(194, 103, 51, 0.65)
           ),
           url("./images/fu7.jpg") center/cover;
         padding: 40px;
@@ -262,6 +301,40 @@
       @media (max-width: 991.98px) {
         .filter-card {
           position: static;
+        }
+
+        .filter-card-mobile {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          width: 80vw;
+          max-width: 360px;
+          z-index: 1050;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          border-radius: 0 18px 18px 0;
+          box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+          overflow-y: auto;
+        }
+
+        body.filters-open .filter-card-mobile {
+          transform: translateX(0);
+        }
+
+        .filter-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.45);
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease;
+          z-index: 1040;
+        }
+
+        body.filters-open .filter-overlay {
+          opacity: 1;
+          visibility: visible;
         }
       }
 
@@ -734,27 +807,12 @@
                         </div>
                       </div>
                       <ul id="sub-menu" class="sm pixelstrap sm-vertical">
-                        <li>
-                          <a href="#!">clothing</a>
-                        </li>
-
-                        <li>
-                          <a href="#!">bags</a>
-                        </li>
-
-                        <li>
-                          <a href="#!">footwear</a>
-                        </li>
-
-                        <li>
-                          <a href="#!">beauty & personal care</a>
-                        </li>
-
-                        <li>
-                          <a href="#!">home & decor</a>
-                        </li>
-                        <li>
-                          <a href="#!">kitchen</a>
+                        <!-- Categories will be loaded dynamically from database -->
+                        <li class="category-loading">
+                          <a href="#!" class="text-muted">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Loading categories...
+                          </a>
                         </li>
                       </ul>
                     </nav>
@@ -855,13 +913,14 @@
     <!-- breadcrumb start -->
     <div class="breadcrumb-section">
       <div class="container">
-        <h2>Collection</h2>
-        <nav class="theme-breadcrumb">
-          <ol class="breadcrumb">
+        <nav class="theme-breadcrumb d-flex justify-content-between align-items-center">
+          <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
               <a href="index.html">Home</a>
             </li>
-            <!-- <li class="breadcrumb-item active">Left sidebar</li> -->
+            <li class="breadcrumb-item active" aria-current="page" id="breadcrumbCategoryLabel">
+              Shop
+            </li>
           </ol>
         </nav>
       </div>
@@ -873,16 +932,24 @@
       <div class="container">
         <div class="category-hero">
           <p class="text-uppercase small mb-2">ARARAT SHOP</p>
-          <h2 class="mb-3">Browse ready-made pieces & bespoke builds</h2>
-          <p class="mb-0">
-            Filter products by category, price and popularity. Each product card
-            connects with the same offline workflow: add it to cart, request an
-            invoice, then continue payment on WhatsApp with our admin team.
+          <h2 class="mb-3" id="categoryHeroTitle">Browse all products</h2>
+          <p class="mb-0" id="categoryHeroSubtitle">
+            Explore ready-made pieces and bespoke builds. Select any category to see only those designs, then chat on WhatsApp to finalize details.
           </p>
         </div>
         <div class="row g-4">
-          <aside class="col-xl-3 col-lg-4">
-            <div class="filter-card p-4">
+      <aside class="col-xl-3 col-lg-4 order-2 order-lg-1">
+        <div class="filter-card p-4 filter-card-mobile">
+          <div class="d-flex justify-content-between align-items-center mb-3 d-lg-none">
+            <h5 class="mb-0">Filters</h5>
+            <button
+              type="button"
+              class="btn btn-link text-muted p-0"
+              id="closeFiltersBtn"
+            >
+              <i class="ri-close-line fs-4"></i>
+            </button>
+          </div>
               <div class="filter-group">
                 <label
                   for="categorySearchInput"
@@ -1001,7 +1068,7 @@
               </button>
             </div>
           </aside>
-          <div class="col-xl-9 col-lg-8">
+          <div class="col-xl-9 col-lg-8 order-1 order-lg-2">
             <div
               class="category-toolbar d-flex flex-wrap align-items-center gap-3 p-3"
             >
@@ -1009,6 +1076,14 @@
                 Loading products...
               </p>
               <div class="d-flex gap-2 ms-auto flex-wrap">
+                <button
+                  class="btn btn-outline-primary btn-sm d-lg-none"
+                  type="button"
+                  id="openFiltersBtn"
+                >
+                  <i class="ri-equalizer-2-line me-1"></i>
+                  Filters
+                </button>
                 <select class="form-select form-select-sm" id="sortSelect">
                   <option value="-createdAt">Newest arrivals</option>
                   <option value="price">Price: Low to High</option>
@@ -4663,6 +4738,9 @@
       </div>
     </div>
     <!-- tap to top end -->
+
+    <!-- mobile filter overlay -->
+    <div class="filter-overlay d-lg-none"></div>
 
     <!-- latest jquery-->
     <script src="./assets/js/ararat-config.js"></script>
