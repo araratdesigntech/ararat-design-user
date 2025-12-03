@@ -4795,6 +4795,410 @@
           }, 100);
         }
       });
+
+      // Search functionality for navbar modal
+      (() => {
+        const searchModal = document.getElementById("searchModal");
+        if (!searchModal) return;
+
+        const modalBody = searchModal.querySelector(".modal-body");
+        if (!modalBody) return;
+
+        // Reuse existing input but give it an id and better placeholder
+        const existingInput =
+          modalBody.querySelector(".search-input-box input") || null;
+        if (!existingInput) return;
+        existingInput.id = "searchModalInput";
+        existingInput.placeholder = "Search products, categories...";
+        existingInput.autocomplete = "off";
+
+        // Hide old dummy static content
+        modalBody
+          .querySelectorAll(".search-category, .search-product-box")
+          .forEach((el) => {
+            el.style.display = "none";
+          });
+
+        // Inject dynamic containers only once
+        if (!document.getElementById("searchResultsContainer")) {
+          modalBody.insertAdjacentHTML(
+            "beforeend",
+            `
+            <ul
+              id="searchCategoriesContainer"
+              class="search-category"
+              style="display: none"
+            >
+              <li class="category-title">Categories:</li>
+            </ul>
+            <div
+              id="searchCategoriesList"
+              class="d-flex flex-wrap gap-2 ms-3 mb-3"
+              style="display: none"
+            ></div>
+
+            <div
+              id="searchResultsContainer"
+              class="search-product-box mt-sm-4 mt-3"
+              style="display: none"
+            >
+              <h3 class="search-title">Search Results</h3>
+              <div
+                id="searchResultsGrid"
+                class="row row-cols-xl-4 row-cols-md-3 row-cols-2 g-sm-4 g-3"
+              ></div>
+              <div
+                id="searchEmptyState"
+                class="text-center py-4 text-muted"
+                style="display: none"
+              >
+                <p>No products found matching your search.</p>
+              </div>
+              <div
+                id="searchLoadingState"
+                class="text-center py-4"
+                style="display: none"
+              >
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="searchInitialState"
+              class="search-product-box mt-sm-4 mt-3"
+            >
+              <h3 class="search-title">Popular Products</h3>
+              <div
+                class="row row-cols-xl-4 row-cols-md-3 row-cols-2 g-sm-4 g-3"
+                id="popularProductsContainer"
+              >
+                <!-- Popular products will be loaded here -->
+              </div>
+            </div>
+          `.trim()
+          );
+        }
+
+        const searchInput = document.getElementById("searchModalInput");
+        const searchResultsContainer = document.getElementById(
+          "searchResultsContainer"
+        );
+        const searchResultsGrid = document.getElementById("searchResultsGrid");
+        const searchEmptyState = document.getElementById("searchEmptyState");
+        const searchLoadingState =
+          document.getElementById("searchLoadingState");
+        const searchInitialState =
+          document.getElementById("searchInitialState");
+        const searchCategoriesContainer = document.getElementById(
+          "searchCategoriesContainer"
+        );
+        const searchCategoriesList =
+          document.getElementById("searchCategoriesList");
+        const popularProductsContainer = document.getElementById(
+          "popularProductsContainer"
+        );
+
+        if (
+          !searchInput ||
+          !searchResultsContainer ||
+          !searchResultsGrid ||
+          !searchEmptyState ||
+          !searchLoadingState ||
+          !searchInitialState ||
+          !searchCategoriesContainer ||
+          !searchCategoriesList ||
+          !popularProductsContainer
+        ) {
+          return;
+        }
+
+        let searchTimeout = null;
+        let categoriesCache = null;
+
+        // Load popular products on modal open
+        const loadPopularProducts = async () => {
+          if (popularProductsContainer.children.length > 0) return; // Already loaded
+
+          try {
+            const apiRequest =
+              window.Storefront?.config?.apiRequest ||
+              window.Storefront?.apiRequest;
+            if (!apiRequest) return;
+
+            const response = await apiRequest(
+              "/products?limit=4&sort=-ratings",
+              { skipAuth: true }
+            );
+            const products = response?.data?.products || [];
+
+            if (products.length === 0) {
+              popularProductsContainer.innerHTML =
+                '<p class="text-muted text-center py-4">No products available</p>';
+              return;
+            }
+
+            popularProductsContainer.innerHTML = products
+              .map((product) => {
+                const imageUrl =
+                  product?.productImages?.[0]?.url ||
+                  "./assets/images/fashion-1/product/17.jpg";
+                const rating = product?.ratings || 0;
+                const productName = product?.name || "Product";
+                const productId = product?._id || "";
+                const whatsappMessage = encodeURIComponent(
+                  `Hello Ararat, I'm interested in "${productName}" (${productId}). Please share current options and availability.`
+                );
+                const whatsappLink = `https://wa.me/2340000000000?text=${whatsappMessage}`;
+
+                return `<div class="col">
+                  <div class="storefront-card">
+                    <div class="storefront-card__image">
+                      <a href="product-page(thumbnail).html?id=${product._id}">
+                        <img src="${imageUrl}" alt="${product.name}" class="img-fluid blur-up lazyload w-100" />
+                      </a>
+                      <div class="cart-info">
+                        <button class="wishlist-icon" data-add-to-wishlist="${product._id}" title="Add to Wishlist" type="button">
+                          <i class="ri-heart-line"></i>
+                        </button>
+                        <button title="Add to cart" data-add-to-cart="${product._id}" type="button">
+                          <i class="ri-shopping-cart-line"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="product-detail">
+                      <a class="product-title" href="product-page(thumbnail).html?id=${product._id}">${product.name}</a>
+                      <p class="text-muted small mb-1">${product?.stock || "Made to order"}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <a
+                          href="${whatsappLink}"
+                          target="_blank"
+                          rel="noopener"
+                          class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 storefront-card__whatsapp"
+                          title="Chat on WhatsApp to negotiate this product"
+                        >
+                          <i class="ri-whatsapp-line"></i>
+                          <span class="small">Chat to negotiate</span>
+                        </a>
+                        ${
+                          rating > 0
+                            ? `<span class="badge bg-light text-dark">
+                          <i class="ri-star-fill text-warning me-1"></i>${Number(
+                            rating
+                          ).toFixed(1)}
+                        </span>`
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+              })
+              .join("");
+
+            // Update WhatsApp links
+            if (
+              window.Storefront &&
+              typeof window.Storefront.syncAdminContact === "function"
+            ) {
+              window.Storefront.syncAdminContact();
+            }
+          } catch (error) {
+            console.error("Error loading popular products:", error);
+          }
+        };
+
+        // Load categories for search
+        const loadCategories = async () => {
+          if (categoriesCache) return categoriesCache;
+
+          try {
+            const apiRequest =
+              window.Storefront?.config?.apiRequest ||
+              window.Storefront?.apiRequest;
+            if (!apiRequest) return [];
+
+            const response = await apiRequest("/categories?limit=10", {
+              skipAuth: true,
+            });
+            const categories = response?.data?.categories || [];
+            categoriesCache = categories;
+            return categories;
+          } catch (error) {
+            console.error("Error loading categories:", error);
+            return [];
+          }
+        };
+
+        // Search products
+        const searchProducts = async (query) => {
+          if (!query || query.trim().length < 2) {
+            searchInitialState.style.display = "block";
+            searchResultsContainer.style.display = "none";
+            searchCategoriesContainer.style.display = "none";
+            searchCategoriesList.style.display = "none";
+            return;
+          }
+
+          searchInitialState.style.display = "none";
+          searchResultsContainer.style.display = "block";
+          searchLoadingState.style.display = "block";
+          searchEmptyState.style.display = "none";
+          searchResultsGrid.innerHTML = "";
+
+          try {
+            const apiRequest =
+              window.Storefront?.config?.apiRequest ||
+              window.Storefront?.apiRequest;
+            if (!apiRequest) {
+              throw new Error("API not available");
+            }
+
+            const response = await apiRequest(
+              `/products?search=${encodeURIComponent(query)}&limit=8`,
+              { skipAuth: true }
+            );
+            const products = response?.data?.products || [];
+
+            searchLoadingState.style.display = "none";
+
+            if (products.length === 0) {
+              searchEmptyState.style.display = "block";
+              searchResultsGrid.innerHTML = "";
+
+              // Show matching categories
+              const categories = await loadCategories();
+              const matchingCategories = categories.filter((cat) =>
+                cat.name.toLowerCase().includes(query.toLowerCase())
+              );
+
+              if (matchingCategories.length > 0) {
+                searchCategoriesContainer.style.display = "block";
+                searchCategoriesList.style.display = "flex";
+                searchCategoriesList.innerHTML = matchingCategories
+                  .map(
+                    (cat) =>
+                      `<a href="category-page.html?category=${cat._id}" class="badge bg-primary text-white text-decoration-none">${cat.name}</a>`
+                  )
+                  .join("");
+              } else {
+                searchCategoriesContainer.style.display = "none";
+                searchCategoriesList.style.display = "none";
+              }
+              return;
+            }
+
+            searchCategoriesContainer.style.display = "none";
+            searchCategoriesList.style.display = "none";
+            searchResultsGrid.innerHTML = products
+              .map((product) => {
+                const imageUrl =
+                  product?.productImages?.[0]?.url ||
+                  "./assets/images/fashion-1/product/17.jpg";
+                const rating = product?.ratings || 0;
+                const productName = product?.name || "Product";
+                const productId = product?._id || "";
+                const whatsappMessage = encodeURIComponent(
+                  `Hello Ararat, I'm interested in "${productName}" (${productId}). Please share current options and availability.`
+                );
+                const whatsappLink = `https://wa.me/2340000000000?text=${whatsappMessage}`;
+
+                return `<div class="col">
+                  <div class="storefront-card">
+                    <div class="storefront-card__image">
+                      <a href="product-page(thumbnail).html?id=${product._id}">
+                        <img src="${imageUrl}" alt="${product.name}" class="img-fluid blur-up lazyload w-100" />
+                      </a>
+                      <div class="cart-info">
+                        <button class="wishlist-icon" data-add-to-wishlist="${product._id}" title="Add to Wishlist" type="button">
+                          <i class="ri-heart-line"></i>
+                        </button>
+                        <button title="Add to cart" data-add-to-cart="${product._id}" type="button">
+                          <i class="ri-shopping-cart-line"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="product-detail">
+                      <a class="product-title" href="product-page(thumbnail).html?id=${product._id}">${product.name}</a>
+                      <p class="text-muted small mb-1">${product?.stock || "Made to order"}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <a
+                          href="${whatsappLink}"
+                          target="_blank"
+                          rel="noopener"
+                          class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-2 storefront-card__whatsapp"
+                          title="Chat on WhatsApp to negotiate this product"
+                        >
+                          <i class="ri-whatsapp-line"></i>
+                          <span class="small">Chat to negotiate</span>
+                        </a>
+                        ${
+                          rating > 0
+                            ? `<span class="badge bg-light text-dark">
+                          <i class="ri-star-fill text-warning me-1"></i>${Number(
+                            rating
+                          ).toFixed(1)}
+                        </span>`
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+              })
+              .join("");
+
+            // Update WhatsApp links
+            if (
+              window.Storefront &&
+              typeof window.Storefront.syncAdminContact === "function"
+            ) {
+              window.Storefront.syncAdminContact();
+            }
+          } catch (error) {
+            console.error("Error searching products:", error);
+            searchLoadingState.style.display = "none";
+            searchEmptyState.style.display = "block";
+            searchEmptyState.innerHTML =
+              '<p class="text-danger">Unable to search. Please try again.</p>';
+          }
+        };
+
+        // Setup search input handler
+        searchInput.addEventListener("input", (e) => {
+          const query = e.target.value.trim();
+
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchProducts(query);
+          }, 300); // Debounce 300ms
+        });
+
+        searchInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            clearTimeout(searchTimeout);
+            searchProducts(e.target.value.trim());
+          }
+        });
+
+        // Load popular products when modal opens
+        searchModal.addEventListener("shown.bs.modal", () => {
+          loadPopularProducts();
+          if (searchInput) searchInput.focus();
+        });
+
+        searchModal.addEventListener("hidden.bs.modal", () => {
+          if (searchInput) {
+            searchInput.value = "";
+            searchInitialState.style.display = "block";
+            searchResultsContainer.style.display = "none";
+            searchCategoriesContainer.style.display = "none";
+            searchCategoriesList.style.display = "none";
+          }
+        });
+      })();
     </script>
   </body>
 </html>
