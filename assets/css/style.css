@@ -26788,7 +26788,7 @@
 
  .contact-page .contact-right ul {
      display: grid;
-     grid-template-columns: 1fr 1fr 1fr 1fr;
+     grid-template-columns: 1fr 1fr 1fr;
      gap: calc(17px + (23 - 17) * ((100vw - 320px) / (1920 - 320)));
      margin-top: calc(20px + (28 - 20) * ((100vw - 320px) / (1920 - 320)))
  }

@@ -1703,49 +1703,8 @@
                                 <h4>Categories</h4>
                             </div>
                             <div class="footer-content">
-                                <ul>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >Room-set
-                      </a>
-                                    </li>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >TV console
-                      </a>
-                                    </li>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >Bed-frame</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >Office-Set</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >Classic Furnishings</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        href="product-page(thumbnail).html"
-                        class="text-content"
-                        >Crystal Clarity Optics</a
-                      >
-                    </li>
+                                <ul id="footerCategoriesList">
+                                    <!-- Categories will be loaded dynamically -->
                                 </ul>
                             </div>
                         </div>
@@ -4202,6 +4161,68 @@
     <script src="./assets/js/theme-setting.js?v=a67495e"></script>
     <script src="./assets/js/script.js?v=a67495e"></script>
     <script src="./assets/js/storefront.js?v=a67495e"></script>
+
+    <script>
+        // Load footer categories dynamically from the database
+        (function () {
+            const footerCategoriesList = document.getElementById('footerCategoriesList');
+            if (!footerCategoriesList) return;
+
+            const apiRequest =
+                (window.Storefront &&
+                    window.Storefront.config &&
+                    window.Storefront.config.apiRequest) ||
+                (window.Storefront && window.Storefront.apiRequest);
+
+            if (!apiRequest) {
+                console.warn('[ProductPage] Storefront API not available for loading footer categories.');
+                return;
+            }
+
+            // Show a lightweight loading state
+            footerCategoriesList.innerHTML =
+                '<li class="text-content text-muted">Loading categories...</li>';
+
+            apiRequest('/categories?limit=8', { skipAuth: true })
+                .then(function (response) {
+                    var categories =
+                        (response && response.data && response.data.categories) ||
+                        response.categories ||
+                        [];
+
+                    if (!categories.length) {
+                        footerCategoriesList.innerHTML =
+                            '<li class="text-content text-muted">No categories available</li>';
+                        return;
+                    }
+
+                    footerCategoriesList.innerHTML = categories
+                        .map(function (category) {
+                            var id = category && category._id ? category._id : '';
+                            var name = category && category.name ? category.name : 'Category';
+                            var href = id
+                                ? 'category-page.html?category=' + encodeURIComponent(id)
+                                : 'category-page.html';
+
+                            return (
+                                '<li>' +
+                                '<a href="' +
+                                href +
+                                '" class="text-content">' +
+                                name +
+                                '</a>' +
+                                '</li>'
+                            );
+                        })
+                        .join('');
+                })
+                .catch(function (error) {
+                    console.error('[ProductPage] Failed to load footer categories:', error);
+                    footerCategoriesList.innerHTML =
+                        '<li class="text-content text-muted">Failed to load categories</li>';
+                });
+        })();
+    </script>
 
     <script>
         function openSearch() {

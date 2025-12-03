@@ -1073,7 +1073,7 @@
                 <div class="col-lg-5">
                     <div class="contact-title">
                         <h2>Get In Touch</h2>
-                        <p>We're here to help! Reach out to us with any questions, feedback, or inquiries, and we'll get
+                        <p>We're here to serve! Reach out to us with any feedback, or inquiries, and we'll get
                             back to you as soon as possible.</p>
                     </div>
                 </div>
@@ -1134,7 +1134,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h6>Contact Us</h6>
-                                    <p>+91 123 - 456 - 7890</p>
+                                    <p>080-396-484-72</p>
                                 </div>
                             </li>
                             <li>
@@ -1143,7 +1143,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h6>Address</h6>
-                                    <p>ABC Complex,Near xyz, New York</p>
+                                    <p>7, Oyo street Mushin Lagos</p>
                                 </div>
                             </li>
                             <li>
@@ -1152,18 +1152,10 @@
                                 </div>
                                 <div class="media-body">
                                     <h6>Email</h6>
-                                    <p>support@multikart.com</p>
+                                    <p>araratdesignltd@gmail.com</p>
                                 </div>
                             </li>
-                            <li>
-                                <div class="contact-icon">
-                                    <i class="ri-cellphone-fill"></i>
-                                </div>
-                                <div class="media-body">
-                                    <h6>Fax</h6>
-                                    <p>support@multikart.com</p>
-                                </div>
-                            </li>
+                           
                         </ul>
                     </div>
                 </div>
@@ -1221,22 +1213,11 @@
                 <div class="footer-title">
                   <h4>Categories</h4>
                 </div>
-                <!-- <div class="footer-content">
-                                <ul>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Baby
-                                            Essentials</a></li>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Bag
-                                            Emporium</a></li>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Books</a>
-                                    </li>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Christmas</a>
-                                    </li>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Classic
-                                            Furnishings</a></li>
-                                    <li><a href="product-page(thumbnail).html" class="text-content">Crystal
-                                            Clarity Optics</a></li>
-                                </ul>
-                            </div> -->
+                <div class="footer-content">
+                  <ul id="footerCategoriesList">
+                    <!-- Categories will be loaded dynamically -->
+                  </ul>
+                </div>
               </div>
             </div>
             <div class="col-xl col-lg-3 col-md-3">
@@ -2565,6 +2546,68 @@
     
     <!-- Storefront JS for API requests and authentication -->
     <script src="./assets/js/storefront.js"></script>
+
+    <script>
+        // Load footer categories dynamically from the database
+        (function () {
+            var footerCategoriesList = document.getElementById('footerCategoriesList');
+            if (!footerCategoriesList) return;
+
+            var apiRequest =
+                (window.Storefront &&
+                    window.Storefront.config &&
+                    window.Storefront.config.apiRequest) ||
+                (window.Storefront && window.Storefront.apiRequest);
+
+            if (!apiRequest) {
+                console.warn('[ContactPage] Storefront API not available for loading footer categories.');
+                return;
+            }
+
+            footerCategoriesList.innerHTML =
+                '<li class="text-content text-muted">Loading categories...</li>';
+
+            apiRequest('/categories?limit=8', { skipAuth: true })
+                .then(function (response) {
+                    var categories =
+                        (response && response.data && response.data.categories) ||
+                        response.categories ||
+                        [];
+
+                    if (!categories.length) {
+                        footerCategoriesList.innerHTML =
+                            '<li class="text-content text-muted">No categories available</li>';
+                        return;
+                    }
+
+                    footerCategoriesList.innerHTML = categories
+                        .map(function (category) {
+                            var id = category && category._id ? category._id : '';
+                            var name = category && category.name ? category.name : 'Category';
+                            var href = id
+                                ? 'category-page.html?category=' + encodeURIComponent(id)
+                                : 'category-page.html';
+
+                            return (
+                                '<li>' +
+                                '<a href="' +
+                                href +
+                                '" class="text-content">' +
+                                name +
+                                '</a>' +
+                                '</li>'
+                            );
+                        })
+                        .join('');
+                })
+                .catch(function (error) {
+                    console.error('[ContactPage] Failed to load footer categories:', error);
+                    footerCategoriesList.innerHTML =
+                        '<li class="text-content text-muted">Failed to load categories</li>';
+                });
+        })();
+
+    </script>
 
     <script>
         function openSearch() {
