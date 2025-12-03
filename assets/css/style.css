@@ -2335,18 +2335,20 @@
     position: relative;
     display: flex;
     align-items: center;
-    height: 80vh;
+    justify-content: center;
+    height: 90vh;
     text-align: center;
-   
-
+    overflow: hidden;
  }
  .head img{
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 90vh;
+    height: 100%;
     object-fit: cover;
-    object-position: center bottom;
-
+    object-position: center center;
+    z-index: 0;
  }
 
  .sammy{
@@ -2359,6 +2361,8 @@
     padding: 30px;
     border-radius: 10px;
     color: white;
+    z-index: 1;
+    max-width: 80%;
  }
 
  .sammy h1{
@@ -2388,6 +2392,140 @@
      border-radius: 5px;
      transition: background 0.3s;
  }
+
+/* Mobile Responsive Styles for Banner */
+@media (max-width: 991.98px) {
+    .head {
+        height: 70vh;
+    }
+    
+    .head img {
+        height: 100%;
+        object-position: center center;
+    }
+    
+    .sammy {
+        margin-top: 100px;
+        padding: 25px 20px;
+        max-width: 90%;
+    }
+    
+    .sammy h1 {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+    
+    .sammy h1 span {
+        font-size: 40px;
+    }
+    
+    .sammy p {
+        font-size: 16px;
+        margin: 12px 0;
+    }
+    
+    .sammy .btn {
+        font-size: 16px;
+        padding: 8px 18px;
+        margin: 4px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .head {
+        height: 60vh;
+        min-height: 400px;
+    }
+    
+    .head img {
+        height: 100%;
+        object-position: center center;
+    }
+    
+    .sammy {
+        margin-top: 60px;
+        padding: 20px 16px;
+        max-width: 95%;
+        width: 100%;
+    }
+    
+    .sammy h1 {
+        font-size: 28px;
+        line-height: 1.3;
+        margin-bottom: 8px;
+    }
+    
+    .sammy h1 span {
+        font-size: 32px;
+        display: block;
+        margin-top: 4px;
+    }
+    
+    .sammy p {
+        font-size: 14px;
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+    
+    .sammy .btn {
+        font-size: 14px;
+        padding: 10px 16px;
+        margin: 6px 4px;
+        display: block;
+        width: calc(100% - 8px);
+        text-align: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .head {
+        height: 50vh;
+        min-height: 350px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .head img {
+        height: 100%;
+        object-position: center center;
+    }
+    
+    .sammy {
+        margin-top: 40px;
+        padding: 16px 12px;
+        max-width: 100%;
+        width: calc(100% - 24px);
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+    
+    .sammy h1 {
+        font-size: 24px;
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+    
+    .sammy h1 span {
+        font-size: 28px;
+        display: block;
+        margin-top: 2px;
+    }
+    
+    .sammy p {
+        font-size: 13px;
+        margin: 8px 0;
+        line-height: 1.4;
+    }
+    
+    .sammy .btn {
+        font-size: 13px;
+        padding: 10px 14px;
+        margin: 4px 0;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+}
 
  /* .hed{
     position: relative;
