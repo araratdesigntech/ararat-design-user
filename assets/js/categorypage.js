@@ -447,18 +447,25 @@
    * Get minimum amount for selected category
    */
   const getSelectedCategoryMinimumAmount = () => {
-    if (!state.category || !els.categoryList) return null;
+    if (!els.categoryList) return null;
     const selectedInput = els.categoryList.querySelector(`input[name="category-filter"]:checked`);
-    if (!selectedInput || !selectedInput.value) return null;
+    if (!selectedInput) return null;
+    
+    // If "All categories" is selected (empty value), return null
+    if (!selectedInput.value || selectedInput.value === '') return null;
+    
     const minimumAmount = selectedInput.dataset.minimum;
-    return minimumAmount ? Number(minimumAmount) : null;
+    return minimumAmount && minimumAmount !== '0' && minimumAmount !== '' ? Number(minimumAmount) : null;
   };
 
   /**
    * Update minimum amount display in hero section
    */
   const updateMinimumAmountDisplay = () => {
-    if (!els.categoryMinimumAmount || !els.categoryMinimumAmountValue) return;
+    if (!els.categoryMinimumAmount || !els.categoryMinimumAmountValue) {
+      console.warn('[CategoryPage] Minimum amount display elements not found');
+      return;
+    }
     
     const selectedCategoryMin = getSelectedCategoryMinimumAmount();
     
@@ -466,9 +473,11 @@
       // Show minimum amount for selected category
       els.categoryMinimumAmountValue.textContent = formatCurrency(selectedCategoryMin);
       els.categoryMinimumAmount.style.display = 'block';
+      console.log('[CategoryPage] Displaying minimum amount:', selectedCategoryMin);
     } else {
       // Hide if no category selected or no minimum amount
       els.categoryMinimumAmount.style.display = 'none';
+      console.log('[CategoryPage] Hiding minimum amount display');
     }
   };
 
@@ -476,7 +485,10 @@
    * Update price filter minimum input based on selected category or all categories
    */
   const updatePriceFilterMinimum = () => {
-    if (!els.priceMinInput) return;
+    if (!els.priceMinInput) {
+      console.warn('[CategoryPage] Price min input element not found');
+      return;
+    }
     
     const selectedCategoryMin = getSelectedCategoryMinimumAmount();
     let minimumPrice = 0;
@@ -484,9 +496,11 @@
     if (selectedCategoryMin && selectedCategoryMin > 0) {
       // Use selected category's minimum amount
       minimumPrice = selectedCategoryMin;
+      console.log('[CategoryPage] Using selected category minimum:', minimumPrice);
     } else {
       // Use minimum of all categories
       minimumPrice = getAllCategoriesMinimumAmount();
+      console.log('[CategoryPage] Using all categories minimum:', minimumPrice);
     }
     
     // Only update if there's a valid minimum and the input is empty or has a lower value
@@ -494,15 +508,17 @@
       const currentValue = Number(els.priceMinInput.value) || 0;
       if (currentValue === 0 || currentValue < minimumPrice) {
         els.priceMinInput.value = minimumPrice;
-        els.priceMinInput.min = minimumPrice;
+        els.priceMinInput.setAttribute('min', minimumPrice.toString());
         // Update state if it was empty
         if (!state.priceMin || Number(state.priceMin) < minimumPrice) {
           state.priceMin = minimumPrice.toString();
         }
+        console.log('[CategoryPage] Updated price filter minimum to:', minimumPrice);
       }
     } else {
       // Reset min attribute if no minimum
-      els.priceMinInput.min = 0;
+      els.priceMinInput.setAttribute('min', '0');
+      console.log('[CategoryPage] No minimum price found, resetting to 0');
     }
   };
 
