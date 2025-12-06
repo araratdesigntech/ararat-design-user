@@ -37,6 +37,9 @@
     priceMax: '',
   };
 
+  // Store categories data globally for minimum amount calculations
+  let categoriesData = [];
+
   const els = {
     grid: document.getElementById('categoryProductGrid'),
     empty: document.getElementById('categoryEmptyState'),
@@ -61,6 +64,8 @@
     openFiltersBtn: document.getElementById('openFiltersBtn'),
     closeFiltersBtn: document.getElementById('closeFiltersBtn'),
     filterOverlay: document.querySelector('.filter-overlay'),
+    categoryMinimumAmount: document.getElementById('categoryMinimumAmount'),
+    categoryMinimumAmountValue: document.getElementById('categoryMinimumAmountValue'),
   };
 
   const formatCurrency = (value = 0) => {
@@ -367,6 +372,9 @@
       // Handle different response structures
       const categories = response?.data?.categories || response?.categories || [];
       
+      // Store categories data globally
+      categoriesData = categories;
+      
       if (!Array.isArray(categories) || categories.length === 0) {
         els.categoryList.innerHTML = '<p class="text-muted small mb-0">No categories available.</p>';
         return;
@@ -383,8 +391,9 @@
           (category) => {
             const categoryId = category._id || category.id || '';
             const categoryName = category.name || 'Unnamed Category';
+            const minimumAmount = category.minimumAmount || 0;
             return `<div class="form-check mb-2">
-              <input class="form-check-input" type="radio" name="category-filter" id="category-${categoryId}" value="${categoryId}" data-label="${categoryName}">
+              <input class="form-check-input" type="radio" name="category-filter" id="category-${categoryId}" value="${categoryId}" data-label="${categoryName}" data-minimum="${minimumAmount}">
               <label class="form-check-label text-capitalize" for="category-${categoryId}">${categoryName}</label>
             </div>`;
           }
@@ -400,6 +409,13 @@
         }
       });
       
+      // Apply category from URL if present
+      applyCategoryFromUrl();
+      
+      // Update minimum amount display and price filter after categories are loaded
+      updateMinimumAmountDisplay();
+      updatePriceFilterMinimum();
+      
     } catch (error) {
       console.error('Error loading categories:', error);
       els.categoryList.innerHTML = `
@@ -414,6 +430,80 @@
       if (sort && chip.dataset.sort) chip.classList.remove('active');
       if (price && (chip.dataset.priceMax || chip.dataset.priceMin)) chip.classList.remove('active');
     });
+  };
+
+  /**
+   * Get minimum amount from all categories
+   */
+  const getAllCategoriesMinimumAmount = () => {
+    if (!categoriesData || categoriesData.length === 0) return 0;
+    const amounts = categoriesData
+      .map(cat => cat.minimumAmount || 0)
+      .filter(amount => amount > 0);
+    return amounts.length > 0 ? Math.min(...amounts) : 0;
+  };
+
+  /**
+   * Get minimum amount for selected category
+   */
+  const getSelectedCategoryMinimumAmount = () => {
+    if (!state.category || !els.categoryList) return null;
+    const selectedInput = els.categoryList.querySelector(`input[name="category-filter"]:checked`);
+    if (!selectedInput || !selectedInput.value) return null;
+    const minimumAmount = selectedInput.dataset.minimum;
+    return minimumAmount ? Number(minimumAmount) : null;
+  };
+
+  /**
+   * Update minimum amount display in hero section
+   */
+  const updateMinimumAmountDisplay = () => {
+    if (!els.categoryMinimumAmount || !els.categoryMinimumAmountValue) return;
+    
+    const selectedCategoryMin = getSelectedCategoryMinimumAmount();
+    
+    if (selectedCategoryMin && selectedCategoryMin > 0) {
+      // Show minimum amount for selected category
+      els.categoryMinimumAmountValue.textContent = formatCurrency(selectedCategoryMin);
+      els.categoryMinimumAmount.style.display = 'block';
+    } else {
+      // Hide if no category selected or no minimum amount
+      els.categoryMinimumAmount.style.display = 'none';
+    }
+  };
+
+  /**
+   * Update price filter minimum input based on selected category or all categories
+   */
+  const updatePriceFilterMinimum = () => {
+    if (!els.priceMinInput) return;
+    
+    const selectedCategoryMin = getSelectedCategoryMinimumAmount();
+    let minimumPrice = 0;
+    
+    if (selectedCategoryMin && selectedCategoryMin > 0) {
+      // Use selected category's minimum amount
+      minimumPrice = selectedCategoryMin;
+    } else {
+      // Use minimum of all categories
+      minimumPrice = getAllCategoriesMinimumAmount();
+    }
+    
+    // Only update if there's a valid minimum and the input is empty or has a lower value
+    if (minimumPrice > 0) {
+      const currentValue = Number(els.priceMinInput.value) || 0;
+      if (currentValue === 0 || currentValue < minimumPrice) {
+        els.priceMinInput.value = minimumPrice;
+        els.priceMinInput.min = minimumPrice;
+        // Update state if it was empty
+        if (!state.priceMin || Number(state.priceMin) < minimumPrice) {
+          state.priceMin = minimumPrice.toString();
+        }
+      }
+    } else {
+      // Reset min attribute if no minimum
+      els.priceMinInput.min = 0;
+    }
   };
 
   const bindEvents = () => {
@@ -450,6 +540,11 @@
         state.category = target.value;
         state.categoryLabel = target.dataset.label || '';
         state.page = 1;
+        
+        // Update minimum amount display and price filter
+        updateMinimumAmountDisplay();
+        updatePriceFilterMinimum();
+        
         loadProducts();
       }
     });
@@ -460,6 +555,11 @@
       const allOption = els.categoryList?.querySelector('#category-all');
       if (allOption) allOption.checked = true;
       state.page = 1;
+      
+      // Update minimum amount display and price filter
+      updateMinimumAmountDisplay();
+      updatePriceFilterMinimum();
+      
       loadProducts();
     });
 
@@ -488,6 +588,11 @@
       const allOption = els.categoryList?.querySelector('#category-all');
       if (allOption) allOption.checked = true;
       resetQuickFilterChips({ sort: true, price: true });
+      
+      // Update minimum amount display and price filter
+      updateMinimumAmountDisplay();
+      updatePriceFilterMinimum();
+      
       updateActiveFilters();
       loadProducts();
     });
@@ -594,6 +699,10 @@
       if (labelElement) {
         state.categoryLabel = labelElement.textContent.trim();
       }
+      
+      // Update minimum amount display and price filter
+      updateMinimumAmountDisplay();
+      updatePriceFilterMinimum();
     }
   };
 
