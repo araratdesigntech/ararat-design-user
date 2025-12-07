@@ -1091,46 +1091,6 @@
                 </div>
               </div>
               <div class="filter-group">
-                <p class="mb-2 fw-semibold">Price range (₦)</p>
-                <div class="row g-2">
-                  <div class="col-6">
-                    <label
-                      class="form-label small text-muted"
-                      for="priceMinInput"
-                      >Min</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="priceMinInput"
-                      placeholder="0"
-                      min="0"
-                    />
-                  </div>
-                  <div class="col-6">
-                    <label
-                      class="form-label small text-muted"
-                      for="priceMaxInput"
-                      >Max</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="priceMaxInput"
-                      placeholder="500000"
-                      min="0"
-                    />
-                  </div>
-                </div>
-                <button
-                  class="btn btn-outline-primary w-100 mt-3"
-                  type="button"
-                  id="applyPriceFilterBtn"
-                >
-                  Apply
-                </button>
-              </div>
-              <div class="filter-group">
                 <p class="mb-2 fw-semibold">Quick filters</p>
                 <div class="d-flex flex-wrap gap-2" id="quickFilterChips">
                   <button
@@ -1139,13 +1099,6 @@
                     data-sort="-ratings"
                   >
                     Top rated
-                  </button>
-                  <button
-                    class="filter-chip"
-                    data-chip="budget"
-                    data-price-max="150000"
-                  >
-                    Under ₦150k
                   </button>
                   <button
                     class="filter-chip"
@@ -1183,8 +1136,6 @@
                 </button>
                 <select class="form-select form-select-sm" id="sortSelect">
                   <option value="-createdAt">Newest arrivals</option>
-                  <option value="price">Price: Low to High</option>
-                  <option value="-price">Price: High to Low</option>
                   <option value="name">Name A-Z</option>
                   <option value="-ratings">Top rated</option>
                 </select>
